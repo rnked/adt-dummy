@@ -1,0 +1,28 @@
+replicaCount: 1
+
+image:
+  repository: artifactory.raiffeisen.ru/odt-docker/adt-dummy
+  tag: "v0.1.0"
+  pullPolicy: IfNotPresent
+  pullSecrets:
+    - artifactory-pull-secret
+
+serviceAccount:
+  create: true
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  host: adt-dummy.odmt-p-mskdc-mskx5-c15.kaas.raiffeisen.ru
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
