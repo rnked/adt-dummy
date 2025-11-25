@@ -1,0 +1,51 @@
+stages:
+  - lint
+  - build
+  - release
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_BUILDKIT: "1"
+  IMAGE: artifactory.raiffeisen.ru/odt-docker/adt-dummy
+  TAG: $CI_COMMIT_SHA
+  ARTIFACTORY_REGISTRY: artifactory.raiffeisen.ru
+
+lint:
+  stage: lint
+  image: alpine/helm:3.14.4
+  script:
+    - helm lint charts/adt-dummy
+
+build:
+  stage: build
+  image: docker:24-dind
+  services:
+    - name: docker:24-dind
+      command: ["--mtu=1400"]
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  script:
+    - echo "$ARTIFACTORY_PASSWORD" | docker login "$ARTIFACTORY_REGISTRY" -u "$ARTIFACTORY_USER" --password-stdin
+    - docker build \
+        --secret id=artifactory_user,env=ARTIFACTORY_USER \
+        --secret id=artifactory_password,env=ARTIFACTORY_PASSWORD \
+        -t "$IMAGE:$TAG" .
+    - docker push "$IMAGE:$TAG"
+  rules:
+    - if: $CI_COMMIT_BRANCH
+
+release:
+  stage: release
+  image: docker:24-dind
+  services:
+    - name: docker:24-dind
+      command: ["--mtu=1400"]
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  script:
+    - echo "$ARTIFACTORY_PASSWORD" | docker login "$ARTIFACTORY_REGISTRY" -u "$ARTIFACTORY_USER" --password-stdin
+    - docker pull "$IMAGE:$CI_COMMIT_SHA"
+    - docker tag "$IMAGE:$CI_COMMIT_SHA" "$IMAGE:$CI_COMMIT_TAG"
+    - docker push "$IMAGE:$CI_COMMIT_TAG"
+  rules:
+    - if: $CI_COMMIT_TAG
