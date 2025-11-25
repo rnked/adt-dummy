@@ -12,15 +12,15 @@ variables:
 
 lint:
   stage: lint
-  image: alpine/helm:3.14.4
+  image: artifactory.raiffeisen.ru/ext-devops-community-docker/cli-tools:2.8.0
   script:
     - helm lint charts/adt-dummy
 
 build:
   stage: build
-  image: docker:24-dind
+  image: artifactory.raiffeisen.ru/ext-devops-community-docker/cli-tools:2.8.0
   services:
-    - name: docker:24-dind
+    - name: artifactory.raiffeisen.ru/ext-devops-community-docker/dind:28.0-dind
       command: ["--mtu=1400"]
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
@@ -36,9 +36,9 @@ build:
 
 release:
   stage: release
-  image: docker:24-dind
+  image: artifactory.raiffeisen.ru/ext-devops-community-docker/cli-tools:2.8.0
   services:
-    - name: docker:24-dind
+    - name: artifactory.raiffeisen.ru/ext-devops-community-docker/dind:28.0-dind
       command: ["--mtu=1400"]
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
