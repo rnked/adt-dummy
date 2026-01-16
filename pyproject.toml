@@ -1,4 +1,53 @@
-  trino==0.326.0
-  urllib3==1.26.18
-  requests==2.31.0
-  
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adt-dummy"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = "==3.9.12"
+authors = [{ name = "Ivan Romanenko", email = "ivan.romanenko@raiffeisen.ru" }]
+maintainers = [{ name = "Ivan Romanenko", email = "ivan.romanenko@raiffeisen.ru" }]
+
+dependencies = [
+  "trino==0.326.0",
+  "urllib3==1.26.18",
+  "requests==2.31.0",
+  "click==",
+  "tabulate==",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest==8.4.2",
+  "pytest-cov==7.0.0",
+]
+
+dev = [
+  "pre-commit==3.7.1",
+  "black==25.1.0",
+  "isort==6.0.1",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py39"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+py_version = 39
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["adt_dummy*"]
