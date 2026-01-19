@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "adt-dummy.fullname" . }}
+  labels:
+    {{- include "adt-dummy.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "adt-dummy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "adt-dummy.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "adt-dummy.serviceAccountName" . }}
+      containers:
+        - name: adt-dummy
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ADT_DUMMY_IN_CLUSTER
+              value: {{ .Values.env.ADT_DUMMY_IN_CLUSTER | quote }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

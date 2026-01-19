@@ -1,0 +1,32 @@
+replicaCount: 1
+
+image:
+  repository: adt-dummy
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+serviceAccount:
+  create: true
+  name: ""
+
+podLabels: {}
+
+env:
+  ADT_DUMMY_IN_CLUSTER: "1"
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+service:
+  enabled: false
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts: []
+  tls: []

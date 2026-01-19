@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "adt-dummy"
 version = "0.1.0"
-description = ""
+description = "Internal toolbox CLI"
 readme = "README.md"
 requires-python = "==3.9.12"
 authors = [{ name = "Ivan Romanenko", email = "ivan.romanenko@raiffeisen.ru" }]
@@ -15,9 +15,12 @@ dependencies = [
   "trino==0.326.0",
   "urllib3==1.26.18",
   "requests==2.31.0",
-  "click==",
-  "tabulate==",
+  "click==8.1.7",
+  "tabulate==0.9.0",
 ]
+
+[project.scripts]
+dami = "adt_dummy.cli:main"
 
 [project.optional-dependencies]
 test = [
