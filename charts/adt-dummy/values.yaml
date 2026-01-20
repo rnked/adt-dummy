@@ -1,9 +1,13 @@
 replicaCount: 1
 
 image:
-  repository: adt-dummy
-  tag: "0.1.0"
+  repository: artifactory.raiffeisen.ru/odt-docker/adt-dummy
+  tag: "v0.1.0"
   pullPolicy: IfNotPresent
+  pullSecrets:
+    - artifactory-pull-secret
+
+envFromSecret: "adt-dummy-secrets"
 
 serviceAccount:
   create: true
@@ -14,19 +18,22 @@ podLabels: {}
 env:
   ADT_DUMMY_IN_CLUSTER: "1"
 
-resources: {}
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
 nodeSelector: {}
 tolerations: []
 affinity: {}
 
 service:
-  enabled: false
   type: ClusterIP
-  port: 80
+  port: 8080
+  targetPort: 8080
 
 ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-  hosts: []
-  tls: []
+  enabled: true
+  host: adt-dummy.odmt-p-mskdc-mskx5-c15.kaas.raiffeisen.ru
