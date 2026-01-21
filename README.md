@@ -2,12 +2,6 @@
 
 Internal toolbox CLI for querying Trino and running quick diagnostics.
 
-## Install
-
-```bash
-pip install .
-```
-
 ## Usage
 
 ```bash
