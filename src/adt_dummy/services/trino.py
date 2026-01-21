@@ -34,10 +34,7 @@ FORBIDDEN_KEYWORDS = {
     "RENAME",
 }
 
-FORBIDDEN_PHRASES = {
-    "SET ROLE",
-    "RESET ROLE",
-}
+TOKEN_RE = re.compile(r"[A-Z_]+|[()]")
 
 
 def parse_params(param_pairs):
@@ -214,6 +211,49 @@ def strip_comments_and_strings(sql):
     return "".join(output)
 
 
+def _tokens_with_depth(cleaned_sql):
+    tokens = []
+    depth = 0
+    for match in TOKEN_RE.finditer(cleaned_sql.upper()):
+        token = match.group(0)
+        if token == "(":
+            depth += 1
+            continue
+        if token == ")":
+            depth = max(0, depth - 1)
+            continue
+        tokens.append((token, depth))
+    return tokens
+
+
+def _main_keyword(tokens):
+    if not tokens:
+        return None, None
+
+    idx = 0
+    if tokens[0][0] == "WITH":
+        idx = 1
+        if idx < len(tokens) and tokens[idx][0] == "RECURSIVE":
+            idx += 1
+
+    keywords = ALLOWED_START | FORBIDDEN_KEYWORDS | {"SET", "RESET"}
+    for i in range(idx, len(tokens)):
+        token, depth = tokens[i]
+        if depth != 0:
+            continue
+        if token in keywords:
+            if token in {"SET", "RESET"}:
+                next_token = None
+                for j in range(i + 1, len(tokens)):
+                    candidate, candidate_depth = tokens[j]
+                    if candidate_depth == 0:
+                        next_token = candidate
+                        break
+                return token, next_token
+            return token, None
+    return None, None
+
+
 def is_read_only_sql(sql):
     statements = split_sql_statements(sql)
     if not statements:
@@ -221,29 +261,22 @@ def is_read_only_sql(sql):
 
     for statement in statements:
         cleaned = strip_comments_and_strings(statement)
-        upper = cleaned.upper()
-        tokens = re.findall(r"[A-Z_]+", upper)
+        tokens = _tokens_with_depth(cleaned)
         if not tokens:
             continue
 
-        first = tokens[0]
-        second = tokens[1] if len(tokens) > 1 else ""
-
-        if first == "SET" and second == "SESSION":
-            pass
-        elif first == "RESET" and second == "SESSION":
-            pass
-        elif first in ALLOWED_START:
-            pass
-        else:
+        first, second = _main_keyword(tokens)
+        if first is None:
             return False
-
-        for phrase in FORBIDDEN_PHRASES:
-            if phrase in upper:
-                return False
-        for keyword in FORBIDDEN_KEYWORDS:
-            if re.search(rf"\b{keyword}\b", upper):
-                return False
+        if first == "SET" and second == "SESSION":
+            continue
+        if first == "RESET" and second == "SESSION":
+            continue
+        if first in ALLOWED_START:
+            continue
+        if first in FORBIDDEN_KEYWORDS:
+            return False
+        return False
 
     return True
 
@@ -265,25 +298,41 @@ def _trino_connection():
     verify = env.get_bool_env("ADT_DUMMY_TRINO_VERIFY", default=False)
 
     auth = BasicAuthentication(user, password)
-    return connect(host=host, port=port, user=user, http_scheme=scheme, auth=auth, verify=verify)
+    try:
+        return connect(
+            host=host,
+            port=port,
+            user=user,
+            http_scheme=scheme,
+            auth=auth,
+            verify=verify,
+        )
+    except Exception as exc:
+        raise AppError(f"Failed to connect to Trino: {exc}") from exc
 
 
 def execute_query(sql, max_rows=200):
     conn = _trino_connection()
     try:
         cursor = conn.cursor()
-        cursor.execute(sql)
+        try:
+            cursor.execute(sql)
+        except Exception as exc:
+            raise AppError(f"Trino query failed: {exc}") from exc
 
-        columns = [desc[0] for desc in (cursor.description or [])]
-        truncated = False
+        try:
+            columns = [desc[0] for desc in (cursor.description or [])]
+            truncated = False
 
-        if max_rows and max_rows > 0:
-            rows = cursor.fetchmany(max_rows + 1)
-            if len(rows) > max_rows:
-                truncated = True
-                rows = rows[:max_rows]
-        else:
-            rows = cursor.fetchall()
+            if max_rows and max_rows > 0:
+                rows = cursor.fetchmany(max_rows + 1)
+                if len(rows) > max_rows:
+                    truncated = True
+                    rows = rows[:max_rows]
+            else:
+                rows = cursor.fetchall()
+        except Exception as exc:
+            raise AppError(f"Failed to fetch Trino results: {exc}") from exc
 
         return columns, rows, truncated
     finally:
