@@ -5,8 +5,6 @@ This project provides a CLI tool (`dami`) used as an internal toolbox. The same 
 1) Local laptop: `dami` proxies commands into the toolbox pod via `kubectl exec`.
 2) In-cluster: `dami __remote` executes the real logic directly inside the pod.
 
-There is no HTTP service. The pod is kept alive and acts as a toolbox container for exec-based workflows.
-
 ## How it works
 
 ### Local execution (proxy mode)
@@ -56,24 +54,12 @@ Key groups:
 
 ## Kubernetes deployment
 
-The Helm chart deploys a single toolbox pod. There is no Service or Ingress because the
-pod is accessed via `kubectl exec` only. Required items:
+The Helm chart deploys a single toolbox pod. 
+Required items:
 
 - Image in Artifactory: `artifactory.raiffeisen.ru/odt-docker/adt-dummy:<tag>`
 - Image pull secret: `artifactory-pull-secret`
-- Secret with Trino settings: `adt-dummy-secrets` containing `ADT_DUMMY_TRINO_*`
-
-## Docker build
-
-The Dockerfile installs the package in a venv and pulls dependencies from Artifactory
-using BuildKit secrets. Build example (run by DevOps with BuildKit enabled):
-
-```bash
-docker build \
-  --secret id=artifactory_user,src=artifactory_user.txt \
-  --secret id=artifactory_password,src=artifactory_password.txt \
-  -t artifactory.raiffeisen.ru/odt-docker/adt-dummy:v0.1.0 .
-```
+- Secret: `adt-dummy-secrets` containing `ADT_DUMMY_*`
 
 ## Security and safety
 
