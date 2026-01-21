@@ -1,0 +1,16 @@
+.git
+.gitlab
+.gitignore
+__pycache__/
+*.py[cod]
+*.sw?
+*.log
+.venv/
+.env*
+dist/
+build/
+.eggs/
+.mypy_cache/
+.pytest_cache/
+.pre-commit-config.yaml
+docs/

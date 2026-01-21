@@ -1,0 +1,24 @@
+repos:
+  - repo: local
+    hooks:
+      - id: isort
+        name: isort
+        entry: ./.venv/bin/python -m isort
+        args: [ "src", "tests" ]
+        types: [ python ]
+        language: system
+        pass_filenames: false
+
+      - id: black
+        name: black
+        entry: ./.venv/bin/python -m black
+        args: [ "src", "tests" ]
+        types: [ python ]
+        language: system
+        pass_filenames: false
+
+      - id: pytest
+        name: pytest
+        entry: ./.venv/bin/python -m pytest -q
+        language: system
+        pass_filenames: false

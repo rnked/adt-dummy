@@ -28,12 +28,3 @@ resources:
 nodeSelector: {}
 tolerations: []
 affinity: {}
-
-service:
-  type: ClusterIP
-  port: 8080
-  targetPort: 8080
-
-ingress:
-  enabled: true
-  host: adt-dummy.odmt-p-mskdc-mskx5-c15.kaas.raiffeisen.ru
