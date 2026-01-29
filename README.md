@@ -21,7 +21,6 @@ tsh login --proxy=teleport.raiffeisen.ru:443
 
 ```bash
 # 1) Clone
-
 git clone <repo-url>
 cd adt-dummy
 
@@ -29,9 +28,9 @@ cd adt-dummy
 pip install -U pip
 pip install -e .
 
-# 3) Verify
 
 dami doctor
+dami --help
 ```
 
 ## Common commands
