@@ -68,15 +68,6 @@ dami go prod
 - In-cluster mode: `ADT_DUMMY_IN_CLUSTER=1` is set in the container. The hidden
   `__remote` group executes the real logic (Trino, Python, net checks).
 
-## Read-only safety for queries
-
-`dami query` is **read-only by default**. DDL/DML is blocked unless you pass
-`--allow-write`.
-
-```bash
-dami query "DELETE FROM table" --allow-write
-```
-
 ## Environment variables
 
 All variables are prefixed with `ADT_DUMMY_`. Use `.env.example` as a template.
