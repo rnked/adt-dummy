@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: artifactory.raiffeisen.ru/odt-docker/adt-dummy
-  tag: "0.1.2"
+  tag: "0.1.3"
   pullPolicy: IfNotPresent
   pullSecrets:
     - artifactory-pull-secret

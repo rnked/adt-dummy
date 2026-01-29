@@ -18,7 +18,7 @@ build:
   extends: .build_kaniko
   variables:
     IMAGE_NAME: "$CI_PROJECT_NAME"
-    IMAGE_TAG: "0.1.2"
+    IMAGE_TAG: "0.1.3"
     DESTINATION: "$ARTIFACTORY_SERVER/odt-docker/${IMAGE_NAME}:$IMAGE_TAG"
     DOCKER_BUILD_ARGS: >-
       --build-arg DEBIAN_REPO_URL="${DEBIAN_REPO_URL}"
