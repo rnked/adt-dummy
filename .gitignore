@@ -15,3 +15,5 @@ __pycache__/
 /.env
 /.env.local
 /.python-version
+.venv
+*.egg-info

@@ -26,6 +26,21 @@ RUN --mount=type=secret,id=creds \
         less \
         procps \
         tzdata \
+        # --- Добавление ---
+        librdkafka-dev \
+        # --- Конец добавления ---
+        build-essential \
+        pkg-config \
+        libssl-dev \
+        libkrb5-dev \
+        libsasl2-dev \
+        libsasl2-modules-gssapi-mit \
+        libzstd-dev \
+        liblz4-dev \
+        libz-dev \
+        krb5-user \
+        krb5-config \
+        # --- Конец добавления ---
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* \
@@ -41,10 +56,12 @@ RUN --mount=type=secret,id=creds2 \
       ARTIFACTORY_USER=$(head -1 /kaniko/creds2) && \
       ARTIFACTORY_PASSWORD=$(tail -1 /kaniko/creds2) && \
       /opt/venv/bin/pip install --upgrade pip && \
-      /opt/venv/bin/pip install --no-cache-dir . \
+      /opt/venv/bin/pip install --no-cache-dir \
+        --no-binary confluent-kafka \
         --trusted-host artifactory.raiffeisen.ru \
         --index-url "https://${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD}@artifactory.raiffeisen.ru/artifactory/api/pypi/remote-pypi/simple" \
         --extra-index-url "https://${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD}@artifactory.raiffeisen.ru/artifactory/api/pypi/datalake-release-pypi/simple" \
+        . \
     '
 
 ENV VIRTUAL_ENV=/opt/venv

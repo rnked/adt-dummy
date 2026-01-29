@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "adt-dummy"
-version = "0.1.0"
+version = "0.1.2"
 description = "Internal toolbox CLI"
 readme = "README.md"
 requires-python = "==3.9.12"
@@ -17,7 +17,7 @@ dependencies = [
   "requests==2.31.0",
   "click==8.1.7",
   "tabulate==0.9.0",
-  "confluent-kafka==2.3.0",
+  "confluent-kafka==1.6.1",
   "numpy==1.26.4",
   "pandas==2.2.2",
   "regex==2024.5.15",
