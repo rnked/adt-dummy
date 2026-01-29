@@ -26,7 +26,10 @@ def _shell_local():
     )
 
 
-@click.command(name="shell")
+@click.command(
+    name="shell",
+    help="Open an interactive shell in the toolbox pod.",
+)
 @click.pass_context
 def shell_cmd(ctx):
     if ctx.obj.get("in_cluster"):
@@ -35,6 +38,9 @@ def shell_cmd(ctx):
         _shell_local()
 
 
-@click.command(name="shell")
+@click.command(
+    name="shell",
+    help="Open an interactive shell inside the current container.",
+)
 def shell_remote_cmd():
     _shell_in_cluster()

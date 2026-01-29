@@ -57,7 +57,11 @@ def _doctor_remote():
     click.echo("Trino environment: ok")
 
 
-@click.command(name="doctor")
+@click.command(
+    name="doctor",
+    help="Check kubectl access locally or Trino configuration in the pod.",
+    epilog="Local mode validates kubectl context, namespace access, and pod discovery.",
+)
 @click.pass_context
 def doctor_cmd(ctx):
     if ctx.obj.get("in_cluster"):
@@ -66,6 +70,9 @@ def doctor_cmd(ctx):
         _doctor_local()
 
 
-@click.command(name="doctor")
+@click.command(
+    name="doctor",
+    help="Check Trino configuration inside the toolbox pod.",
+)
 def doctor_remote_cmd():
     _doctor_remote()

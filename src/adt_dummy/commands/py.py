@@ -65,10 +65,21 @@ def _run_remote(mode, path, args, stdin_flag):
     raise SystemExit(exit_code)
 
 
-@click.command(name="py")
-@click.argument("mode")
-@click.argument("path", required=False)
-@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+@click.command(
+    name="py",
+    help="Run Python code inside the toolbox pod.",
+    epilog=(
+        "\b\n"
+        "MODE can be: run, edit, - (stdin).\n"
+        "Examples:\n"
+        "  dami py run script.py -- arg1 arg2\n"
+        "  cat script.py | dami py - -- arg1 arg2\n"
+        "  dami py edit -- arg1 arg2\n"
+    ),
+)
+@click.argument("mode", metavar="MODE")
+@click.argument("path", required=False, metavar="PATH")
+@click.argument("args", nargs=-1, type=click.UNPROCESSED, metavar="[ARGS]...")
 @click.pass_context
 def py_cmd(ctx, mode, path, args):
     path, args = _normalize_args(mode, path, args)
@@ -99,11 +110,11 @@ def py_cmd(ctx, mode, path, args):
     proxy_to_remote(["dami", "__remote"] + remote_args, stdin_data=code)
 
 
-@click.command(name="py")
+@click.command(name="py", help="Run Python code inside the toolbox pod.")
 @click.option("--stdin", is_flag=True, hidden=True)
-@click.argument("mode")
-@click.argument("path", required=False)
-@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+@click.argument("mode", metavar="MODE")
+@click.argument("path", required=False, metavar="PATH")
+@click.argument("args", nargs=-1, type=click.UNPROCESSED, metavar="[ARGS]...")
 def py_remote_cmd(stdin, mode, path, args):
     path, args = _normalize_args(mode, path, args)
     _run_remote(mode, path, args, stdin_flag=stdin)

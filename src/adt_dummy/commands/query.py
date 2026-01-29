@@ -51,14 +51,58 @@ def _run_query(sql_text, params, allow_write, fmt, output_path, max_rows):
         )
 
 
-@click.command(name="query")
-@click.option("-f", "--file", "file_path", type=click.Path(exists=True, dir_okay=False))
-@click.option("--format", "fmt", type=click.Choice(["table", "csv", "json"]), default="table")
-@click.option("--output", "output_path", type=click.Path(dir_okay=False))
-@click.option("--max-rows", type=int, default=200)
-@click.option("--param", "params", multiple=True)
-@click.option("--allow-write", is_flag=True, default=False)
-@click.argument("sql", required=False)
+@click.command(
+    name="query",
+    help="Run a Trino query (read-only by default).",
+    epilog=(
+        "\b\n"
+        "Examples:\n"
+        "  dami query \"SELECT 1\"\n"
+        "  dami query -f query.sql --param TABLE=foo\n"
+        "  dami query \"SELECT 1\" --format json --max-rows 0\n"
+    ),
+)
+@click.option(
+    "-f",
+    "--file",
+    "file_path",
+    type=click.Path(exists=True, dir_okay=False),
+    help="Read SQL from a .sql file.",
+)
+@click.option(
+    "--format",
+    "fmt",
+    type=click.Choice(["table", "csv", "json"]),
+    default="table",
+    show_default=True,
+    help="Output format.",
+)
+@click.option(
+    "--output",
+    "output_path",
+    type=click.Path(dir_okay=False),
+    help="Write output to a local file.",
+)
+@click.option(
+    "--max-rows",
+    type=int,
+    default=200,
+    show_default=True,
+    help="Limit output rows (0 means unlimited).",
+)
+@click.option(
+    "--param",
+    "params",
+    multiple=True,
+    help="Template substitution KEY=VALUE (replaces {{KEY}} in SQL).",
+)
+@click.option(
+    "--allow-write",
+    is_flag=True,
+    default=False,
+    help="Allow DDL/DML statements (disable read-only checks).",
+)
+@click.argument("sql", required=False, metavar="SQL")
 @click.pass_context
 def query_cmd(ctx, file_path, fmt, output_path, max_rows, params, allow_write, sql):
     if ctx.obj.get("in_cluster"):
@@ -84,15 +128,52 @@ def query_cmd(ctx, file_path, fmt, output_path, max_rows, params, allow_write, s
         click.echo(f"Wrote output to {output_path}")
 
 
-@click.command(name="query")
-@click.option("-f", "--file", "file_path", type=click.Path(exists=True, dir_okay=False))
-@click.option("--format", "fmt", type=click.Choice(["table", "csv", "json"]), default="table")
-@click.option("--output", "output_path", type=click.Path(dir_okay=False))
-@click.option("--max-rows", type=int, default=200)
-@click.option("--param", "params", multiple=True)
-@click.option("--allow-write", is_flag=True, default=False)
+@click.command(
+    name="query",
+    help="Run a Trino query inside the pod.",
+)
+@click.option(
+    "-f",
+    "--file",
+    "file_path",
+    type=click.Path(exists=True, dir_okay=False),
+    help="Read SQL from a .sql file.",
+)
+@click.option(
+    "--format",
+    "fmt",
+    type=click.Choice(["table", "csv", "json"]),
+    default="table",
+    show_default=True,
+    help="Output format.",
+)
+@click.option(
+    "--output",
+    "output_path",
+    type=click.Path(dir_okay=False),
+    help="Write output to a local file.",
+)
+@click.option(
+    "--max-rows",
+    type=int,
+    default=200,
+    show_default=True,
+    help="Limit output rows (0 means unlimited).",
+)
+@click.option(
+    "--param",
+    "params",
+    multiple=True,
+    help="Template substitution KEY=VALUE (replaces {{KEY}} in SQL).",
+)
+@click.option(
+    "--allow-write",
+    is_flag=True,
+    default=False,
+    help="Allow DDL/DML statements (disable read-only checks).",
+)
 @click.option("--stdin", is_flag=True, hidden=True)
-@click.argument("sql", required=False)
+@click.argument("sql", required=False, metavar="SQL")
 def query_remote_cmd(file_path, fmt, output_path, max_rows, params, allow_write, stdin, sql):
     sql_text = _load_sql(sql, file_path, stdin=stdin)
     _run_query(sql_text, params, allow_write, fmt, output_path, max_rows)

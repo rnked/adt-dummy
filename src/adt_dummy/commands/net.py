@@ -91,13 +91,23 @@ def _http_logic(
         raise AppError(f"HTTP request failed with status {response.status_code}")
 
 
-@click.group(name="net")
+@click.group(
+    name="net",
+    help="Network diagnostics (DNS, TCP, HTTP).",
+    epilog=(
+        "\b\n"
+        "Examples:\n"
+        "  dami net dns example.com\n"
+        "  dami net tcp example.com:443\n"
+        "  dami net http https://example.com --show-body\n"
+    ),
+)
 @click.pass_context
 def net_cmd(ctx):
     pass
 
 
-@net_cmd.command(name="dns")
+@net_cmd.command(name="dns", help="Resolve DNS A/AAAA records.")
 @click.argument("name")
 @click.pass_context
 def net_dns_cmd(ctx, name):
@@ -112,7 +122,7 @@ def net_dns_cmd(ctx, name):
         click.echo(f"{record_type}\t{address}")
 
 
-@net_cmd.command(name="tcp")
+@net_cmd.command(name="tcp", help="Check TCP connectivity to HOST:PORT.")
 @click.argument("target")
 @click.pass_context
 def net_tcp_cmd(ctx, target):
@@ -125,15 +135,20 @@ def net_tcp_cmd(ctx, target):
     click.echo(f"TCP connection ok: {host}:{port}")
 
 
-@net_cmd.command(name="http")
+@net_cmd.command(name="http", help="Make an HTTP request.")
 @click.argument("url")
-@click.option("--method", default="GET")
-@click.option("--header", "header_items", multiple=True)
-@click.option("--timeout", type=int, default=10)
-@click.option("--data")
-@click.option("--json", "json_value")
-@click.option("--show-body", is_flag=True, default=False)
-@click.option("--allow-http-errors", is_flag=True, default=False)
+@click.option("--method", default="GET", show_default=True, help="HTTP method.")
+@click.option("--header", "header_items", multiple=True, help="Header 'Key: Value'.")
+@click.option("--timeout", type=int, default=10, show_default=True, help="Timeout in seconds.")
+@click.option("--data", help="Request body or @file.")
+@click.option("--json", "json_value", help="JSON body or @file.")
+@click.option("--show-body", is_flag=True, default=False, help="Print response body.")
+@click.option(
+    "--allow-http-errors",
+    is_flag=True,
+    default=False,
+    help="Exit 0 even on HTTP status >= 400.",
+)
 @click.pass_context
 def net_http_cmd(
     ctx, url, method, header_items, timeout, data, json_value, show_body, allow_http_errors
@@ -168,12 +183,12 @@ def net_http_cmd(
     _http_logic(method, url, header_items, timeout, data, json_value, show_body, allow_http_errors)
 
 
-@click.group(name="net")
+@click.group(name="net", help="Network diagnostics inside the pod.")
 def net_remote_cmd():
     pass
 
 
-@net_remote_cmd.command(name="dns")
+@net_remote_cmd.command(name="dns", help="Resolve DNS A/AAAA records.")
 @click.argument("name")
 def net_dns_remote_cmd(name):
     addresses = net_service.resolve_dns(name)
@@ -183,7 +198,7 @@ def net_dns_remote_cmd(name):
         click.echo(f"{record_type}\t{address}")
 
 
-@net_remote_cmd.command(name="tcp")
+@net_remote_cmd.command(name="tcp", help="Check TCP connectivity to HOST:PORT.")
 @click.argument("target")
 def net_tcp_remote_cmd(target):
     host, port = _parse_host_port(target)
@@ -191,17 +206,22 @@ def net_tcp_remote_cmd(target):
     click.echo(f"TCP connection ok: {host}:{port}")
 
 
-@net_remote_cmd.command(name="http")
+@net_remote_cmd.command(name="http", help="Make an HTTP request.")
 @click.argument("url")
-@click.option("--method", default="GET")
-@click.option("--header", "header_items", multiple=True)
-@click.option("--timeout", type=int, default=10)
-@click.option("--data")
+@click.option("--method", default="GET", show_default=True, help="HTTP method.")
+@click.option("--header", "header_items", multiple=True, help="Header 'Key: Value'.")
+@click.option("--timeout", type=int, default=10, show_default=True, help="Timeout in seconds.")
+@click.option("--data", help="Request body or @file.")
 @click.option("--data-raw", hidden=True)
-@click.option("--json", "json_value")
+@click.option("--json", "json_value", help="JSON body or @file.")
 @click.option("--json-raw", hidden=True)
-@click.option("--show-body", is_flag=True, default=False)
-@click.option("--allow-http-errors", is_flag=True, default=False)
+@click.option("--show-body", is_flag=True, default=False, help="Print response body.")
+@click.option(
+    "--allow-http-errors",
+    is_flag=True,
+    default=False,
+    help="Exit 0 even on HTTP status >= 400.",
+)
 def net_http_remote_cmd(
     url,
     method,

@@ -12,11 +12,31 @@ from adt_dummy.core.env import is_in_cluster
 from adt_dummy.core.errors import AppError
 
 
-@click.group()
+CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"], "max_content_width": 100}
+
+
+@click.group(
+    context_settings=CONTEXT_SETTINGS,
+    help=(
+        "Internal toolbox CLI. Runs locally by proxying commands into a toolbox pod. "
+        "Inside the pod, dami executes the same commands directly."
+    ),
+    epilog=(
+        "\b\n"
+        "Examples:\n"
+        "  dami doctor\n"
+        "  dami query \"SELECT 1\"\n"
+        "  dami py run script.py -- arg1 arg2\n"
+        "  dami net http https://example.com --show-body\n"
+    ),
+    invoke_without_command=True,
+)
 @click.version_option(__version__, prog_name="dami")
 @click.pass_context
 def cli(ctx):
     ctx.obj = {"in_cluster": is_in_cluster()}
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
 
 
 @cli.group(name="__remote", hidden=True)

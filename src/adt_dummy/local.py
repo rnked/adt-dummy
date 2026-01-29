@@ -36,11 +36,11 @@ def proxy_to_remote(
         return
 
     result = run_command(cmd, input_text=stdin_data, timeout=timeout, check=False)
-    if result.stderr:
-        click.echo(result.stderr, err=True, nl=False)
     if result.returncode != 0:
         message = result.stderr.strip() or "Remote command failed"
         raise AppError(message, exit_code=result.returncode)
+    if result.stderr:
+        click.echo(result.stderr, err=True, nl=False)
     if capture_output:
         return result.stdout
     if result.stdout:
