@@ -71,11 +71,7 @@ def select_pod_from_json(data, explicit_pod=None):
                 return explicit_pod
         raise AppError(f"Pod not found: {explicit_pod}")
 
-    running = [
-        item
-        for item in items
-        if item.get("status", {}).get("phase") == "Running"
-    ]
+    running = [item for item in items if item.get("status", {}).get("phase") == "Running"]
     selected = running[0] if running else items[0]
     name = selected.get("metadata", {}).get("name")
     if not name:

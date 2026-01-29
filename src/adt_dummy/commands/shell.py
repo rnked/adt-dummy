@@ -21,9 +21,7 @@ def _shell_in_cluster():
 
 
 def _shell_local():
-    proxy_to_remote(
-        ["dami", "__remote", "shell"], tty=True, interactive=True
-    )
+    proxy_to_remote(["dami", "__remote", "shell"], tty=True, interactive=True)
 
 
 @click.command(

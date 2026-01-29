@@ -12,9 +12,7 @@ def proxy_to_remote(
     command_args, stdin_data=None, timeout=None, tty=False, interactive=False, capture_output=False
 ):
     namespace = env.get_env("ADT_DUMMY_NAMESPACE", default="adt-dynamic")
-    selector = env.get_env(
-        "ADT_DUMMY_POD_SELECTOR", default="app.kubernetes.io/name=adt-dummy"
-    )
+    selector = env.get_env("ADT_DUMMY_POD_SELECTOR", default="app.kubernetes.io/name=adt-dummy")
     explicit_pod = env.get_env("ADT_DUMMY_POD", default=None)
     exec_timeout = env.get_int_env("ADT_DUMMY_EXEC_TIMEOUT_SECONDS", default=60)
     timeout = timeout if timeout is not None else exec_timeout

@@ -3,9 +3,8 @@
 import json
 from pathlib import Path
 
-import requests
-
 import click
+import requests
 
 from adt_dummy.core.errors import AppError
 from adt_dummy.local import proxy_to_remote

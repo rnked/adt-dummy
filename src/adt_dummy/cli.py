@@ -3,6 +3,7 @@
 import click
 
 from adt_dummy import __version__
+from adt_dummy.commands.cluster import go_cmd, ls_cmd
 from adt_dummy.commands.doctor import doctor_cmd, doctor_remote_cmd
 from adt_dummy.commands.net import net_cmd, net_remote_cmd
 from adt_dummy.commands.py import py_cmd, py_remote_cmd
@@ -10,7 +11,6 @@ from adt_dummy.commands.query import query_cmd, query_remote_cmd
 from adt_dummy.commands.shell import shell_cmd, shell_remote_cmd
 from adt_dummy.core.env import is_in_cluster
 from adt_dummy.core.errors import AppError
-
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"], "max_content_width": 100}
 
@@ -25,7 +25,8 @@ CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"], "max_content_width": 
         "\b\n"
         "Examples:\n"
         "  dami doctor\n"
-        "  dami query \"SELECT 1\"\n"
+        "  dami go prod\n"
+        '  dami query "SELECT 1"\n'
         "  dami py run script.py -- arg1 arg2\n"
         "  dami net http https://example.com --show-body\n"
     ),
@@ -49,6 +50,8 @@ cli.add_command(shell_cmd)
 cli.add_command(query_cmd)
 cli.add_command(net_cmd)
 cli.add_command(py_cmd)
+cli.add_command(ls_cmd)
+cli.add_command(go_cmd)
 
 remote_group.add_command(doctor_remote_cmd)
 remote_group.add_command(shell_remote_cmd)

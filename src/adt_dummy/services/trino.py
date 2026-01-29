@@ -284,8 +284,7 @@ def is_read_only_sql(sql):
 def ensure_read_only(sql):
     if not is_read_only_sql(sql):
         raise AppError(
-            "Query rejected: read-only mode blocks DDL/DML. "
-            "Use --allow-write to override."
+            "Query rejected: read-only mode blocks DDL/DML. " "Use --allow-write to override."
         )
 
 

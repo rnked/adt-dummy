@@ -46,9 +46,7 @@ def _run_query(sql_text, params, allow_write, fmt, output_path, max_rows):
         click.echo(rendered)
 
     if truncated:
-        click.echo(
-            "Output truncated. Use --max-rows 0 to disable the limit.", err=True
-        )
+        click.echo("Output truncated. Use --max-rows 0 to disable the limit.", err=True)
 
 
 @click.command(
@@ -57,9 +55,9 @@ def _run_query(sql_text, params, allow_write, fmt, output_path, max_rows):
     epilog=(
         "\b\n"
         "Examples:\n"
-        "  dami query \"SELECT 1\"\n"
+        '  dami query "SELECT 1"\n'
         "  dami query -f query.sql --param TABLE=foo\n"
-        "  dami query \"SELECT 1\" --format json --max-rows 0\n"
+        '  dami query "SELECT 1" --format json --max-rows 0\n'
     ),
 )
 @click.option(
