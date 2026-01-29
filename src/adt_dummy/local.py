@@ -20,7 +20,14 @@ def proxy_to_remote(
     timeout = timeout if timeout is not None else exec_timeout
 
     pod = find_pod(namespace, selector, explicit_pod=explicit_pod, timeout=timeout)
-    cmd = build_exec_cmd(namespace, pod, command_args, tty=tty, interactive=interactive)
+    needs_stdin = stdin_data is not None
+    cmd = build_exec_cmd(
+        namespace,
+        pod,
+        command_args,
+        tty=tty,
+        interactive=interactive or needs_stdin,
+    )
 
     if interactive:
         exit_code = run_interactive(cmd)

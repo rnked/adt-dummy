@@ -1,0 +1,28 @@
+include:
+  - project: "devops_community/the-way-of-cicd"
+    ref: "6.27.0"
+    file:
+      - "all-latest-stages/build/build-package.yml"
+
+stages:
+  - build
+
+variables:
+  DEBIAN_VERSION: "13.2"
+  DEBIAN_SLIM_VERSION: "${DEBIAN_VERSION}-slim"
+  DEBIAN_REPO_URL: "https://artifactory.raiffeisen.ru/artifactory/debian"
+  APPSEC_TEAM_ID: F4812
+
+build:
+  stage: build
+  extends: .build_kaniko
+  variables:
+    IMAGE_NAME: "$CI_PROJECT_NAME"
+    IMAGE_TAG: "0.1.0"
+    DESTINATION: "$ARTIFACTORY_SERVER/odt-docker/${IMAGE_NAME}:$IMAGE_TAG"
+    DOCKER_BUILD_ARGS: >-
+      --build-arg DEBIAN_REPO_URL="${DEBIAN_REPO_URL}"
+      --ignore-path="/etc/apt/auth.conf"
+  before_script:
+    - echo "machine $ARTIFACTORY_SERVER login $ARTIFACTORY_USER password $ARTIFACTORY_PASSWORD" > /kaniko/creds
+    - echo -e "${ARTIFACTORY_USER}\n${ARTIFACTORY_PASSWORD}" > /kaniko/creds2

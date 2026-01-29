@@ -20,7 +20,9 @@ spec:
       serviceAccountName: {{ include "adt-dummy.serviceAccountName" . }}
       {{- with .Values.image.pullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
       {{- end }}
       containers:
         - name: adt-dummy
