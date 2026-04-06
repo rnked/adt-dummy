@@ -1,11 +1,31 @@
-# syntax=docker/dockerfile:1.4
-FROM artifactory.raiffeisen.ru/python-community-docker/python:3.9.12-slim-rbru
+# Первый слой, для всех проектов идетичен. Тут мы копируем зависимости из собранного ранее в пайплайне кеша.
+ARG BASE_IMAGE="artifactory.raiffeisen.ru/python-community-docker/python:3.9.12-slim-rbru"
+
+FROM ${BASE_IMAGE} AS deps-image
+
+ENV VENV_PATH="/srv/www/.venv"
+
+COPY [".venv", "${VENV_PATH}"]
+
+RUN find ${VENV_PATH}/bin -type f -exec sed -i 's#/.*/\.venv#/srv/www/.venv#g' {} + \
+    && ln -sf /usr/local/bin/python ${VENV_PATH}/bin/python
+
+# Второй слой. Собираем итоговый образ
+FROM ${BASE_IMAGE} as app-image
+
+# Обявляем нужные переменные
+ENV REQUESTS_CA_BUNDLE="/etc/ssl/certs/ca-certificates.crt"
+ENV VENV_PATH="/srv/www/.venv"
+ENV PATH="${VENV_PATH}/bin:${PATH}"
+ENV PYTHONPATH="/app/src"
 
 ARG DEBIAN_REPO_URL
 
+# Обновляем и скачиваем нужные пакеты debian
 RUN --mount=type=secret,id=creds \
     cat /kaniko/creds > /etc/apt/auth.conf \
     && rm -f /etc/apt/sources.list.d/debian.sources \
+    && echo 'Acquire::https::artifactory.raiffeisen.ru::Verify-Peer "false";' > /etc/apt/apt.conf.d/80-ssl-exceptions \
     && eval "$(grep ^VERSION_CODENAME= /etc/os-release)" \
     && echo "deb $DEBIAN_REPO_URL ${VERSION_CODENAME} main" > /etc/apt/sources.list.d/sources.list \
     && echo "deb $DEBIAN_REPO_URL ${VERSION_CODENAME}-updates main" >> /etc/apt/sources.list.d/sources.list \
@@ -26,9 +46,7 @@ RUN --mount=type=secret,id=creds \
         less \
         procps \
         tzdata \
-        # --- Добавление ---
         librdkafka-dev \
-        # --- Конец добавления ---
         build-essential \
         pkg-config \
         libssl-dev \
@@ -40,32 +58,17 @@ RUN --mount=type=secret,id=creds \
         libz-dev \
         krb5-user \
         krb5-config \
-        # --- Конец добавления ---
     && apt-get autoremove -y \
     && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm /etc/apt/auth.conf
+    && rm -rf /var/lib/apt/lists/*
 
+# Устанавливаем рабочую деррикторию
 WORKDIR /app
+
+# Копируем необходимые файлы
+COPY --from=deps-image ${VENV_PATH} ${VENV_PATH}
 COPY pyproject.toml README.md /app/
 COPY src /app/src
-
-RUN --mount=type=secret,id=creds2 \
-    bash -euxo pipefail -c '\
-      python -m venv /opt/venv && \
-      ARTIFACTORY_USER=$(head -1 /kaniko/creds2) && \
-      ARTIFACTORY_PASSWORD=$(tail -1 /kaniko/creds2) && \
-      /opt/venv/bin/pip install --upgrade pip && \
-      /opt/venv/bin/pip install --no-cache-dir \
-        --no-binary confluent-kafka \
-        --trusted-host artifactory.raiffeisen.ru \
-        --index-url "https://${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD}@artifactory.raiffeisen.ru/artifactory/api/pypi/remote-pypi/simple" \
-        --extra-index-url "https://${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD}@artifactory.raiffeisen.ru/artifactory/api/pypi/datalake-release-pypi/simple" \
-        . \
-    '
-
-ENV VIRTUAL_ENV=/opt/venv
-ENV PATH="/opt/venv/bin:${PATH}"
 
 ENV ADT_DUMMY_IN_CLUSTER=1
 

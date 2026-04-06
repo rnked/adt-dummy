@@ -1,0 +1,17 @@
+version: v2
+proxy_server: teleport.raiffeisen.ru:443
+onboarding:
+  join_method: gitlab
+  token: $TBOT_NAME
+oneshot: true
+storage:
+  type: memory
+outputs:
+  - type: kubernetes/v2
+    disable_exec_plugin: true
+    selectors:
+      - labels:
+          clusterFamily: $TARGET_CLUSTER_FAMILY
+    destination:
+      type: directory
+      path: $MACHINE_ID_DIR

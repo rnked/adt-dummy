@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "adt-dummy"
-version = "0.1.2"
+version = "0.1.0"
 description = "Internal toolbox CLI"
 readme = "README.md"
 requires-python = "==3.9.12"
@@ -21,22 +21,65 @@ dependencies = [
   "numpy==1.26.4",
   "pandas==2.2.2",
   "regex==2024.5.15",
+  "python-dotenv==1.2.1",
+  "fastavro==1.12.1",
+  "redis==7.0.1",
+  "fakeredis==2.33.0",
 ]
 
-[project.scripts]
-dami = "adt_dummy.cli:main"
-
-[project.optional-dependencies]
-test = [
-  "pytest==8.4.2",
-  "pytest-cov==7.0.0",
-]
+[dependency-groups]
 
 dev = [
   "pre-commit==3.7.1",
   "black==25.1.0",
   "isort==6.0.1",
 ]
+
+test = [
+  "pytest==8.4.2",
+  "pytest-cov==4.1.0",
+]
+
+[tool.uv]
+# Отключаем сборку пакета, если это не библиотека
+package = false
+
+# Настройка приватного индекса
+[[tool.uv.index]]
+name = "raif"
+url = "https://artifactory.raiffeisen.ru/artifactory/api/pypi/remote-pypi/simple"
+default = true
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Настройки инструментов
+# ----------------------------------------------------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = """
+--capture=no
+--cov
+--cov-report=term-missing
+--cov-report=xml
+--exitfirst
+--junitxml=reports/junit.xml
+--verbose
+"""
+
+[tool.coverage.run]
+source = ["adt_dummy"]
+relative_files = true
+
+[tool.coverage.xml]
+output = "reports/coverage.xml"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["adt_dummy*"]
 
 [tool.black]
 line-length = 100
@@ -46,15 +89,3 @@ target-version = ["py39"]
 profile = "black"
 line_length = 100
 py_version = 39
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"]
-addopts = "-q"
-
-[tool.setuptools]
-package-dir = { "" = "src" }
-
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["adt_dummy*"]

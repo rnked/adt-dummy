@@ -21,9 +21,7 @@ def _check_trino_env():
 
 def _doctor_local():
     namespace = env.get_env("ADT_DUMMY_NAMESPACE", default="adt-dynamic")
-    selector = env.get_env(
-        "ADT_DUMMY_POD_SELECTOR", default="app.kubernetes.io/name=adt-dummy"
-    )
+    selector = env.get_env("ADT_DUMMY_POD_SELECTOR", default="app.kubernetes.io/name=adt-dummy")
     explicit_pod = env.get_env("ADT_DUMMY_POD", default=None)
     exec_timeout = env.get_int_env("ADT_DUMMY_EXEC_TIMEOUT_SECONDS", default=60)
 
@@ -51,13 +49,15 @@ def _doctor_remote():
     click.echo("Mode: in-cluster")
     missing = _check_trino_env()
     if missing:
-        raise AppError(
-            "Missing required environment variables: " + ", ".join(missing)
-        )
+        raise AppError("Missing required environment variables: " + ", ".join(missing))
     click.echo("Trino environment: ok")
 
 
-@click.command(name="doctor")
+@click.command(
+    name="doctor",
+    help="Check kubectl access locally or Trino configuration in the pod.",
+    epilog="Local mode validates kubectl context, namespace access, and pod discovery.",
+)
 @click.pass_context
 def doctor_cmd(ctx):
     if ctx.obj.get("in_cluster"):
@@ -66,6 +66,9 @@ def doctor_cmd(ctx):
         _doctor_local()
 
 
-@click.command(name="doctor")
+@click.command(
+    name="doctor",
+    help="Check Trino configuration inside the toolbox pod.",
+)
 def doctor_remote_cmd():
     _doctor_remote()

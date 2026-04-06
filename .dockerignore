@@ -5,7 +5,6 @@ __pycache__/
 *.py[cod]
 *.sw?
 *.log
-.venv/
 .env*
 dist/
 build/

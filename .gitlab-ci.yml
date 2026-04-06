@@ -1,28 +1,27 @@
 include:
-  - project: "devops_community/the-way-of-cicd"
-    ref: "6.27.0"
+  - project: "ml-operation-platform/operations-antifraud/adt-pipeline-core"
+    ref: "master"
     file:
-      - "all-latest-stages/build/build-package.yml"
-
-stages:
-  - build
+      - "pipeline.yaml"
 
 variables:
-  DEBIAN_VERSION: "13.2"
-  DEBIAN_SLIM_VERSION: "${DEBIAN_VERSION}-slim"
-  DEBIAN_REPO_URL: "https://artifactory.raiffeisen.ru/artifactory/debian"
-  APPSEC_TEAM_ID: F4812
-
-build:
-  stage: build
-  extends: .build_kaniko
-  variables:
-    IMAGE_NAME: "$CI_PROJECT_NAME"
-    IMAGE_TAG: "0.1.2"
-    DESTINATION: "$ARTIFACTORY_SERVER/odt-docker/${IMAGE_NAME}:$IMAGE_TAG"
-    DOCKER_BUILD_ARGS: >-
-      --build-arg DEBIAN_REPO_URL="${DEBIAN_REPO_URL}"
-      --ignore-path="/etc/apt/auth.conf"
-  before_script:
-    - echo "machine $ARTIFACTORY_SERVER login $ARTIFACTORY_USER password $ARTIFACTORY_PASSWORD" > /kaniko/creds
-    - echo -e "${ARTIFACTORY_USER}\n${ARTIFACTORY_PASSWORD}" > /kaniko/creds2
+  PLAY_TBOT_CONFIG: true
+  PLAY_GET_SECRETS: true
+  PLAY_VERSION: true
+  PLAY_DEFINE_DOCKER_REPO: true
+  PLAY_DEFINE_HELM_REPO: true
+  PLAY_SONAR_CODE_SCAN: true
+  PLAY_DOCKER_LINT: true
+  PLAY_CACHE: true
+  PLAY_TESTS_RUN: true
+  PYTEST_COVER_PERCENT: 0
+  PYTHONPATH_FOR_TESTS: "${CI_PROJECT_DIR}/src"
+  PLAY_BUILD_IMAGE: true
+  DOCKERFILE_LOCAL: "Dockerfile"
+  PLAY_DEPLOY_TEST: true
+  PLAY_DEPLOY_PREVIEW: true
+  PLAY_DEPLOY_PROD: true
+  PLAY_RELEASE: true
+  PLAY_ROLL_BACK_DEPLOY_TEST: true
+  PLAY_ROLL_BACK_DEPLOY_PREVIEW: true
+  PLAY_ROLL_BACK_DEPLOY_PROD: true

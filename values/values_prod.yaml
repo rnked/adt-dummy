@@ -1,0 +1,32 @@
+namespace: "$NAMESPACE_TO_DEPLOY"
+imagePullSecret: "$IMAGE_PULL_SECRET"
+resource_name: "$CI_PROJECT_NAME"
+
+serviceAccount:
+  enabled: true
+
+deployment:
+  enabled: true
+  config:
+    $CI_PROJECT_NAME:
+      imageName: "$ARTIFACTORY_SERVER/$DOCKER_REPO/$CI_PROJECT_NAME:$VERSION"
+      serviceAccountName: "$CI_PROJECT_NAME"
+      containerName: "$CI_PROJECT_NAME"
+      envFrom:
+        - secretRef:
+            name: "$CI_PROJECT_NAME"
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "100m"
+        limits:
+          memory: "512Mi"
+          cpu: "200m"
+
+externalSecret:
+  enabled: true
+  config:
+    $CI_PROJECT_NAME:
+      dataFrom:
+        - vaultPath: "$ENV/$CI_PROJECT_NAME"
+        - vaultPath: "common/dp-trino"

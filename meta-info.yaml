@@ -1,0 +1,26 @@
+---
+api_version: 2.0.0
+team_nid: a627
+ail_id: 1519
+component:
+  - name: adt-dummy
+    description: "The same dami binary runs in two modes: local and inside the pod."
+    type: service
+    lifecycle: development
+    tags:
+      - python
+      - adt-dummy
+capabilities:
+  code_quality:
+    settings:
+      sonar_key: ADT.adt-dummy
+  logging:
+    settings:
+      clmp_index_name: "logs-adtservices"
+  monitoring:
+    settings:
+      grafana_org_id: 534
+      fireplace_customers:
+        - "L3_AF_Data_Team"
+  time_to_market:
+    ttm_info_link: "https://gitlabci.raiffeisen.ru/example/ttm_info.yaml"
