@@ -27,3 +27,14 @@ def test_select_pod_explicit():
 def test_select_pod_no_items():
     with pytest.raises(AppError):
         select_pod_from_json({"items": []})
+
+
+def test_select_pod_requires_running():
+    data = {
+        "items": [
+            {"metadata": {"name": "pod-a"}, "status": {"phase": "Pending"}},
+            {"metadata": {"name": "pod-b"}, "status": {"phase": "ContainerCreating"}},
+        ]
+    }
+    with pytest.raises(AppError):
+        select_pod_from_json(data)

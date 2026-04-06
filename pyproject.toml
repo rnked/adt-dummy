@@ -27,6 +27,9 @@ dependencies = [
   "fakeredis==2.33.0",
 ]
 
+[project.scripts]
+dami = "adt_dummy.cli:main"
+
 [dependency-groups]
 
 dev = [
@@ -41,9 +44,6 @@ test = [
 ]
 
 [tool.uv]
-# Отключаем сборку пакета, если это не библиотека
-package = false
-
 # Настройка приватного индекса
 [[tool.uv.index]]
 name = "raif"

@@ -4,8 +4,7 @@ import click
 
 from adt_dummy.core import env
 from adt_dummy.core.errors import AppError
-from adt_dummy.core.proc import run_command, run_interactive, which_or_error
-from adt_dummy.k8s import kubectl_base_cmd
+from adt_dummy.core.proc import run_interactive, which_or_error
 
 CLUSTER_ENV_DEFAULTS = {
     "prod": ("ADT_DUMMY_CLUSTER_PROD", "odmt-p-mskdc-mskx5-c15.kaas.raiffeisen.ru"),
@@ -25,17 +24,6 @@ def _get_cluster_name(target):
     if not value:
         raise AppError(f"Cluster is not configured. Set {env_key}.")
     return value
-
-
-@click.command(name="ls", help="List pods in the configured namespace.")
-@click.pass_context
-def ls_cmd(ctx):
-    _ensure_local(ctx, "dami ls")
-    namespace = env.get_env("ADT_DUMMY_NAMESPACE", default="adt-dynamic")
-    cmd = kubectl_base_cmd() + ["get", "pods", "-n", namespace]
-    result = run_command(cmd)
-    if result.stdout:
-        click.echo(result.stdout, nl=False)
 
 
 @click.command(

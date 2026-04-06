@@ -7,6 +7,7 @@ Internal toolbox CLI for data workflows. The same `dami` binary runs in two mode
 
 ## Prerequisites (local)
 
+- `uv`
 - `kubectl` (Homebrew: `brew install kubernetes-cli`)
 - Teleport client `tsh` (install from Managed Software Center)
 - Python `3.9.12`
@@ -24,13 +25,26 @@ tsh login --proxy=teleport.raiffeisen.ru:443
 git clone <repo-url>
 cd adt-dummy
 
-# 2) Install
-pip install -U pip
-pip install -e .
+# 2) Install dami as a global command
+uv tool install .
 
+# 3) If this is the first uv tool on your machine, add uv tools to PATH once
+uv tool update-shell
 
+# 4) Open a new shell and run dami from anywhere
 dami doctor
 dami --help
+```
+
+If `dami` is not found after installation, reopen your shell after
+`uv tool update-shell`.
+
+## Development
+
+For local development use:
+
+```bash
+make install
 ```
 
 ## Common commands
@@ -54,11 +68,14 @@ dami net dns example.com
 dami net tcp example.com:443
 dami net http https://example.com --show-body
 
-# List pods in the current namespace
-dami ls
-
 # Switch clusters (tsh kube login)
 dami go prod
+
+# Generate a commit message from staged changes
+dami commit
+dami commit --model base
+# Large diffs are rejected explicitly
+# Split the staged changes into smaller commits first
 ```
 
 ## How it works (short)
@@ -72,8 +89,12 @@ dami go prod
 
 All variables are prefixed with `ADT_DUMMY_`. Use `.env.example` as a template.
 
+`dami commit` additionally uses AI Gateway credentials:
+- `ADT_DUMMY_LLM_BASE_URL` (example: `https://gateway-ai.raiffeisen.ru`)
+- `ADT_DUMMY_LLM_API_KEY`
+
 Local / proxy:
-- `ADT_DUMMY_NAMESPACE` (default: `adt-dynamic`)
+- `ADT_DUMMY_NAMESPACE` (default: `adt-adt-dummy`)
 - `ADT_DUMMY_POD_SELECTOR` (default: `app.kubernetes.io/name=adt-dummy`)
 - `ADT_DUMMY_POD` (optional explicit pod name)
 - `ADT_DUMMY_KUBECTL_BIN` (default: `kubectl`)

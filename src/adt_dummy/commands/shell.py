@@ -1,7 +1,5 @@
 """Shell command."""
 
-import os
-
 import click
 
 from adt_dummy.core.errors import AppError
@@ -9,13 +7,8 @@ from adt_dummy.core.proc import run_interactive
 from adt_dummy.local import proxy_to_remote
 
 
-def _pick_shell():
-    return "/bin/bash" if os.path.exists("/bin/bash") else "/bin/sh"
-
-
 def _shell_in_cluster():
-    shell = _pick_shell()
-    exit_code = run_interactive([shell])
+    exit_code = run_interactive(["/bin/bash"])
     if exit_code != 0:
         raise AppError("Shell exited with an error", exit_code=exit_code)
 
