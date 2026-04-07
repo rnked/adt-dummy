@@ -21,7 +21,9 @@ def _check_trino_env():
 
 def _doctor_local():
     namespace = env.get_env("ADT_DUMMY_NAMESPACE", default="adt-adt-dummy")
-    selector = env.get_env("ADT_DUMMY_POD_SELECTOR", default="app.kubernetes.io/name=adt-dummy")
+    selector = env.get_env(
+        "ADT_DUMMY_POD_SELECTOR", default="app.kubernetes.io/instance=adt-dummy"
+    )
     explicit_pod = env.get_env("ADT_DUMMY_POD", default=None)
     exec_timeout = env.get_int_env("ADT_DUMMY_EXEC_TIMEOUT_SECONDS", default=60)
 

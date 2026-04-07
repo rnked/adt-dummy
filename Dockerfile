@@ -46,18 +46,6 @@ RUN --mount=type=secret,id=creds \
         less \
         procps \
         tzdata \
-        librdkafka-dev \
-        build-essential \
-        pkg-config \
-        libssl-dev \
-        libkrb5-dev \
-        libsasl2-dev \
-        libsasl2-modules-gssapi-mit \
-        libzstd-dev \
-        liblz4-dev \
-        libz-dev \
-        krb5-user \
-        krb5-config \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*

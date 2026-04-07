@@ -6,11 +6,12 @@ from adt_dummy.core import env
 from adt_dummy.core.errors import AppError
 
 DEFAULT_MODEL = "base"
+DEFAULT_BASE_URL = "https://gateway-ai.raiffeisen.ru"
 CHAT_COMPLETIONS_ENDPOINT = "/v1/chat/completions"
 
 
 def chat_completion_text(messages, model=DEFAULT_MODEL, temperature=None, timeout=30):
-    base_url = env.get_env("ADT_DUMMY_LLM_BASE_URL", required=True).rstrip("/")
+    base_url = env.get_env("ADT_DUMMY_LLM_BASE_URL", default=DEFAULT_BASE_URL).rstrip("/")
     api_key = env.get_env("ADT_DUMMY_LLM_API_KEY", required=True)
     payload = {
         "model": model,

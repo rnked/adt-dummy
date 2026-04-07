@@ -39,6 +39,9 @@ dami --help
 If `dami` is not found after installation, reopen your shell after
 `uv tool update-shell`.
 
+To use `dami commit`, export your `ADT_DUMMY_LLM_API_KEY`.
+You can get it in [LLM Playground](https://llm-playground.raiffeisen.ru/).
+
 ## Development
 
 For local development use:
@@ -90,12 +93,13 @@ dami commit --model base
 All variables are prefixed with `ADT_DUMMY_`. Use `.env.example` as a template.
 
 `dami commit` additionally uses AI Gateway credentials:
-- `ADT_DUMMY_LLM_BASE_URL` (example: `https://gateway-ai.raiffeisen.ru`)
+- `ADT_DUMMY_LLM_BASE_URL` (default: `https://gateway-ai.raiffeisen.ru`)
 - `ADT_DUMMY_LLM_API_KEY`
+  You can get the API key in [LLM Playground](https://llm-playground.raiffeisen.ru/).
 
 Local / proxy:
 - `ADT_DUMMY_NAMESPACE` (default: `adt-adt-dummy`)
-- `ADT_DUMMY_POD_SELECTOR` (default: `app.kubernetes.io/name=adt-dummy`)
+- `ADT_DUMMY_POD_SELECTOR` (default: `app.kubernetes.io/instance=adt-dummy`)
 - `ADT_DUMMY_POD` (optional explicit pod name)
 - `ADT_DUMMY_KUBECTL_BIN` (default: `kubectl`)
 - `ADT_DUMMY_KUBECTL_CONTEXT` (optional)

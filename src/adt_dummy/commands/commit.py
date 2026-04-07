@@ -50,9 +50,11 @@ def _staged_diff():
 def _choose_commit(candidates):
     for index, candidate in enumerate(candidates, start=1):
         click.echo(f"{index}. {candidate}")
-    click.echo("Enter a number from 1 to 3, or press Ctrl+C to cancel.")
+    click.echo("Enter a number from 1 to 3, or press 0 to cancel.")
 
-    choice = click.prompt("Choose commit", type=click.IntRange(1, len(candidates)))
+    choice = click.prompt("Choose commit", type=click.IntRange(0, len(candidates)))
+    if choice == 0:
+        return None
     return candidates[choice - 1]
 
 
@@ -121,5 +123,8 @@ def commit_cmd(ctx, model):
     diff_text = _staged_diff()
     candidates = _generate_commit_candidates(diff_text, model=model)
     selected_commit = _choose_commit(candidates)
+    if selected_commit is None:
+        click.echo("Commit cancelled.")
+        return
     run_command(["git", "commit", "-m", selected_commit])
     click.echo(f"Created commit: {selected_commit}")

@@ -61,7 +61,7 @@ def test_commit_command_commits_selected_message(monkeypatch):
     assert ["git", "commit", "-m", "fix: handle empty diff"] in commands
     assert "1. feat: add commit command" in result.output
     assert "2. fix: handle empty diff" in result.output
-    assert "Enter a number from 1 to 3, or press Ctrl+C to cancel." in result.output
+    assert "Enter a number from 1 to 3, or press 0 to cancel." in result.output
     assert "Created commit: fix: handle empty diff" in result.output
 
 
@@ -80,6 +80,32 @@ def test_commit_command_requires_staged_diff(monkeypatch):
         str(result.exception)
         == "No staged changes found. Stage changes before running dami commit."
     )
+
+
+def test_commit_command_allows_cancel(monkeypatch):
+    commands = []
+
+    def fake_run_command(args, input_text=None, timeout=None, check=True):
+        commands.append(args)
+        if args[:3] == ["git", "diff", "--cached"]:
+            return DummyResult(stdout="diff --git a/foo.py b/foo.py\n+print('hi')\n")
+        raise AssertionError(args)
+
+    monkeypatch.setattr("adt_dummy.commands.commit.run_command", fake_run_command)
+    monkeypatch.setattr(
+        "adt_dummy.commands.commit.llm.chat_completion_text",
+        lambda messages, model="base", temperature=None, timeout=30: (
+            '["feat: add commit command", "fix: handle empty diff", "chore: update docs"]'
+        ),
+    )
+
+    runner = CliRunner()
+    result = runner.invoke(commit_cmd, obj={"in_cluster": False}, input="0\n")
+
+    assert result.exit_code == 0
+    assert commands == [["git", "diff", "--cached", "--no-ext-diff", "--unified=0", "--no-color"]]
+    assert "Enter a number from 1 to 3, or press 0 to cancel." in result.output
+    assert "Commit cancelled." in result.output
 
 
 def test_commit_command_rejects_large_staged_diff(monkeypatch):
