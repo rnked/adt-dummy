@@ -5,10 +5,9 @@ requires-python = "==3.9.12"
 [[package]]
 name = "adt-dummy"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "click" },
-    { name = "confluent-kafka" },
     { name = "fakeredis" },
     { name = "fastavro" },
     { name = "numpy" },
@@ -36,7 +35,6 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = "==8.1.7" },
-    { name = "confluent-kafka", specifier = "==1.6.1" },
     { name = "fakeredis", specifier = "==2.33.0" },
     { name = "fastavro", specifier = "==1.12.1" },
     { name = "numpy", specifier = "==1.26.4" },
@@ -154,18 +152,6 @@ source = { registry = "https://artifactory.raiffeisen.ru/artifactory/api/pypi/re
 sdist = { url = "https://artifactory.raiffeisen.ru/artifactory/api/pypi/remote-pypi/packages/packages/d8/53/6f443c9a4a8358a93a6792e2acffb9d9d5cb0a5cfd8802644b7b1c9a02e4/colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44" }
 wheels = [
     { url = "https://artifactory.raiffeisen.ru/artifactory/api/pypi/remote-pypi/packages/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6" },
-]
-
-[[package]]
-name = "confluent-kafka"
-version = "1.6.1"
-source = { registry = "https://artifactory.raiffeisen.ru/artifactory/api/pypi/remote-pypi/simple" }
-sdist = { url = "https://artifactory.raiffeisen.ru/artifactory/api/pypi/remote-pypi/packages/packages/1d/de/c29e4355371c1436261d38359b9f257f7b44371b7b6ef2a50e2fb59093f6/confluent-kafka-1.6.1.tar.gz", hash = "sha256:800f9cf5ec421dab82c01355bfa9ed819b70d70b01ca1e41c0f8526e5f340ddf" }
-wheels = [
-    { url = "https://artifactory.raiffeisen.ru/artifactory/api/pypi/remote-pypi/packages/packages/56/eb/15e05216f9112a62ebf559c57062685ce66e224058f40bd8d2352e649ee9/confluent_kafka-1.6.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:5e7ef0412be9ad2b3c50a4628eedee9fe3f34923ebd7cf462c720b275bcb9cc6" },
-    { url = "https://artifactory.raiffeisen.ru/artifactory/api/pypi/remote-pypi/packages/packages/e9/7d/4f95316f0d370bb43b9a4226e5a73a3778af45fc2646a42a43233cf0bb1c/confluent_kafka-1.6.1-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:89cf8bc31111747ab8269fc01fdf2760158b05483d1dd25aa4a0e991679682d4" },
-    { url = "https://artifactory.raiffeisen.ru/artifactory/api/pypi/remote-pypi/packages/packages/8e/21/4359f1cbf62a2a351bfd327ae1aeeafa8cfff5f6d4a19b182a8990f986ee/confluent_kafka-1.6.1-cp39-cp39-win32.whl", hash = "sha256:0ad2b2476f9acdfcdc6fcf9a53c88a215e9085fc7f4d084a2c74eee9ffa9a8a8" },
-    { url = "https://artifactory.raiffeisen.ru/artifactory/api/pypi/remote-pypi/packages/packages/36/9c/1b696b6263e6e31274e0f404f4cc124cb590481812724e60e3f863cd3804/confluent_kafka-1.6.1-cp39-cp39-win_amd64.whl", hash = "sha256:f0204d1825b04e5a6a450142d7b0b5aca25586bf1a21503e19dfec337bcca661" },
 ]
 
 [[package]]
